@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BroCode Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>🧠 BroCode – Behavioral Trust Dashboard</h1>
+  <input type="hidden" id="user" value="demo_user">
+  
+  <div class="status-box">
+    <p>Trust Score: <span id="trust_score">0.00</span></p>
+    <p>Status: <span id="risk_status">Normal</span></p>
+  </div>
+
+  <canvas id="trustChart" width="600" height="200"></canvas>
+
+  <script src="{{ url_for('static', filename='monitor.js') }}"></script>
+  <script>
+  const ctx = document.getElementById('trustChart').getContext('2d');
+  const trustChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Trust Score',
+        data: [],
+        borderColor: '#00bcd4',
+        borderWidth: 2,
+        tension: 0.2
+      }]
+    },
+    options: { scales: { y: { min: 0, max: 1 } } }
+  });
+
+  setInterval(async () => {
+    const score = document.getElementById("trust_score").innerText;
+    const risk = document.getElementById("risk_status").innerText;
+    const time = new Date().toLocaleTimeString();
+    trustChart.data.labels.push(time);
+    trustChart.data.datasets[0].data.push(parseFloat(score));
+    trustChart.update();
+  }, 5000);
+  </script>
+</body>
+</html>
