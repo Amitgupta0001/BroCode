@@ -2,6 +2,9 @@
 // Captures keystroke events, bundles them and sends to /monitor_activity periodically.
 // Also updates the dashboard UI (elements with IDs 'trust' and 'risk').
 
+let gazeScore = 0.5;
+let poseScore = 0.5;
+
 (function () {
   // Buffer of keystroke events
   let keystrokes = [];
@@ -83,3 +86,27 @@
     flushNow: sendBehaviorData
   };
 })();
+
+async function initWebcam() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const video = document.createElement("video");
+    video.srcObject = stream;
+    video.play();
+    // Simulate minor gaze variation
+    setInterval(() => {
+      gazeScore = 0.6 + 0.2 * Math.random();
+      poseScore = 0.6 + 0.3 * Math.random();
+    }, 3000);
+  } catch (err) {
+    console.warn("Webcam not available or permission denied:", err);
+  }
+}
+initWebcam();
+
+// Later in sendBehaviorData()
+const frame_data = {
+  gaze_score: gazeScore,
+  pose_score: poseScore,
+  frame_trust: (gazeScore + poseScore) / 2
+};
