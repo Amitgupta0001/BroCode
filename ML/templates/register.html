@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Register - BroCode</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% extends "base.html" %}
+  {% block title %}Register — BroCode{% endblock %}
+  {% block content %}
+  <section class="form-card">
+    <h2>Register</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form id="registerForm" class="capture-keystrokes" action="{{ url_for('register') }}" method="post" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" required minlength="3" />
+
+      <label for="language">Language</label>
+      <select id="language" name="language" required>
+        <option value="english">English</option>
+        <option value="spanish">Spanish</option>
+        <option value="french">French</option>
+      </select>
+
+      <label for="typing_field">Type the passphrase (min 5 characters)</label>
+      <input id="typing_field" name="passphrase" type="text" placeholder="type here" autocomplete="off" required minlength="5" />
+
+      <input id="keystrokes" name="keystrokes" type="hidden" />
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Register</button>
+        <a class="btn btn-muted" href="{{ url_for('index') }}">Cancel</a>
+      </div>
+    </form>
+  </section>
+
+  <script>
+    // Simple keystroke capture: record key and timestamp relative to start
+    (function(){
+      const typingField = document.getElementById('typing_field');
+      const keystrokesInput = document.getElementById('keystrokes');
+      const form = document.getElementById('registerForm');
+      let startTime = null;
+      let events = [];
+
+      typingField.addEventListener('keydown', (e) => {
+        if (!startTime) startTime = Date.now();
+        events.push({ key: e.key, t: Date.now() - startTime });
+        keystrokesInput.value = JSON.stringify(events);
+      });
+
+      form.addEventListener('submit', (ev) => {
+        if (!events || events.length < 5) {
+          ev.preventDefault();
+          alert('Please type at least 5 keystrokes so the system can register your pattern.');
+          typingField.focus();
+        }
+      });
+    })();
+  </script>
+  {% endblock %}
+</body>
+</html>

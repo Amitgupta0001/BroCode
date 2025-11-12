@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Authenticate - BroCode</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main>
+    <h1>Authenticate</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <section class="form-card">
+      <h2>Authenticate</h2>
+      <form id="authForm" class="capture-keystrokes" action="{{ url_for('authenticate') }}" method="post" novalidate>
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required minlength="3" />
+
+        <label for="language">Language</label>
+        <select id="language" name="language" required>
+          <option value="english">English</option>
+          <option value="spanish">Spanish</option>
+        </select>
+
+        <label for="typing_field">Type the passphrase</label>
+        <input id="typing_field" name="passphrase" type="text" placeholder="type here" autocomplete="off" required minlength="5" />
+
+        <input id="keystrokes" name="keystrokes" type="hidden" />
+
+        <div class="form-actions">
+          <button type="submit" class="btn">Authenticate</button>
+          <a class="btn btn-muted" href="{{ url_for('index') }}">Cancel</a>
+        </div>
+      </form>
+      <aside class="hint">Make sure you type the same passphrase used during registration.</aside>
+    </section>
+
+    <script>
+      (function(){
+        const typingField = document.getElementById('typing_field');
+        const keystrokesInput = document.getElementById('keystrokes');
+        const form = document.getElementById('authForm');
+        let startTime = null;
+        let events = [];
+
+        typingField.addEventListener('keydown', (e) => {
+          if (!startTime) startTime = Date.now();
+          events.push({ key: e.key, t: Date.now() - startTime });
+          keystrokesInput.value = JSON.stringify(events);
+        });
+
+        form.addEventListener('submit', (ev) => {
+          if (!events || events.length < 5) {
+            ev.preventDefault();
+            alert('Please type at least 5 keystrokes before submitting.');
+            typingField.focus();
+          }
+        });
+      })();
+    </script>
+  </main>
+</body>
+</html>

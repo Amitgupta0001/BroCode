@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BroCode Authentication</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main>
+    <h1>BroCode Keystroke Authentication</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <nav>
+      <a href="{{ url_for('register') }}">Register</a> |
+      <a href="{{ url_for('authenticate') }}">Authenticate</a>
+    </nav>
+
+    <section>
+      <h2>Quick Start</h2>
+      <p>Register by entering a username and typing the given passphrase. The browser captures keystroke timings which are sent to the server.</p>
+    </section>
+
+    {% block content %}
+    <section class="hero">
+      <h2>Keystroke-based Behavioral Authentication</h2>
+      <p>Register by typing a short passphrase multiple times so the system learns your typing rhythm. Then authenticate by typing the same phrase.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>Register</h3>
+          <p>Create a profile and record typing samples.</p>
+          <a class="btn" href="{{ url_for('register') }}">Register</a>
+        </div>
+        <div class="card">
+          <h3>Authenticate</h3>
+          <p>Prove your identity by typing the passphrase.</p>
+          <a class="btn" href="{{ url_for('authenticate') }}">Authenticate</a>
+        </div>
+      </div>
+    </section>
+    {% endblock %}
+  </main>
+</body>
+</html>
